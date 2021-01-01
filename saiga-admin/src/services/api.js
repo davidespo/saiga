@@ -21,9 +21,20 @@ export class SaigaApi {
       method: 'POST',
       data: { filter },
     };
-    console.log(req);
     const res = await axios(req);
     return res.data;
+  }
+  async createProject(projectId) {
+    await axios({
+      url: `${BASE_URL}/api/system/projects/${projectId}`,
+      method: 'POST',
+    });
+  }
+  async deleteProject(projectId) {
+    await axios({
+      url: `${BASE_URL}/api/system/projects/${projectId}`,
+      method: 'DELETE',
+    });
   }
 }
 
