@@ -7,7 +7,7 @@ const sleep = (delay) => new Promise((res) => setTimeout(res, delay));
 
 describe('DB - Project', () => {
   describe('System Projects', () => {
-    const projects = system.getProjects();
+    const projects = system.getProjectCollection();
     it('should not have null projects', () => {
       expect(projects).not.null;
     });

@@ -25,10 +25,9 @@ describe('DB - Collection', () => {
     await col.put(id, expected);
     value = await col.get(id);
     expect(value, 'read after update').deep.eq(expected);
-    // TODO: fix test
-    // await col.remove(id);
-    // value = await col.get(id);
-    // expect(value, 'null after delete').null;
+    await col.remove(id);
+    value = await col.get(id);
+    expect(value, 'null after delete').null;
   });
   const m = (key, value) => ({ key, value });
   const a = m('a', { num: 42 });

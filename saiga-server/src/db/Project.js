@@ -17,4 +17,13 @@ class Project {
   }
 }
 
-module.exports = { Project };
+class SystemProject extends Project {
+  getProjectCollection() {
+    return this.getCollection('projects');
+  }
+  getUsersCollection() {
+    return this.getCollection('users');
+  }
+}
+
+module.exports = { Project, SystemProject };

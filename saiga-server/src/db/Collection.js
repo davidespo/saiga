@@ -65,7 +65,7 @@ class Collection {
     });
   }
   async remove(key) {
-    await this.db.del(key);
+    await this.db.del(this.toNsKey(key));
   }
 }
 
