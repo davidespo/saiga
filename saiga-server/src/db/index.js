@@ -42,15 +42,16 @@ const PROJECT_CACHE = {};
 async function getProject(projectId) {
   let project = PROJECT_CACHE[projectId];
   if (!project) {
-    project = PROJECT_CACHE[projectId] = new Project(getDb(projectId));
     const projects = system.getProjectCollection();
-    const model = await projects.get(projectId);
+    let model = await projects.get(projectId);
     if (!model) {
       await projects.put(projectId, {
         projectId,
         created: new Date().toISOString(),
       });
+      model = await projects.get(projectId);
     }
+    project = PROJECT_CACHE[projectId] = new Project(getDb(projectId), model);
   }
   return project;
 }

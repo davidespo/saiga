@@ -1,9 +1,19 @@
 const { Collection } = require('./Collection');
 
 class Project {
-  constructor(db) {
+  constructor(db, info) {
     this.db = db;
+    this._collectionsDb = new Collection(db, '_collections');
+    this.info = info;
     this.collections = {};
+  }
+  async getInfo() {
+    return {
+      ...this.info,
+      collections: await this._collectionsDb
+        .search({})
+        .then((res) => res.content),
+    };
   }
   getCollection(namespace) {
     let collection = this.collections[namespace];
@@ -12,6 +22,7 @@ class Project {
         this.db,
         namespace,
       );
+      this._collectionsDb.put(namespace, { namespace });
     }
     return collection;
   }
