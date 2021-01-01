@@ -14,7 +14,7 @@ router.get('/:projectId/:collectionId', async (req, res) => {
   res.send(payload);
 });
 
-router.search('/:projectId/:collectionId', async (req, res) => {
+router.post('/:projectId/:collectionId/_search', async (req, res) => {
   const { filter, limit, reverse } = req.body;
   const collection = await getCollection(req);
   const payload = await collection.search({ filter, limit, reverse });
