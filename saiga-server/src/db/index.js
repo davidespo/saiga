@@ -42,7 +42,7 @@ const PROJECT_CACHE = {};
 async function getProject(projectId) {
   let project = PROJECT_CACHE[projectId];
   if (!project) {
-    const projects = system.getProjectCollection();
+    const projects = await system.getProjectCollection();
     let model = await projects.get(projectId);
     if (!model) {
       await projects.put(projectId, {
@@ -56,7 +56,15 @@ async function getProject(projectId) {
   return project;
 }
 
+async function deleteProject(projectId) {
+  delete PROJECT_CACHE[projectId];
+  // TODO: proper delete/shutdown
+  const projects = await system.getProjectCollection();
+  await projects.remove(projectId);
+}
+
 module.exports = {
+  deleteProject,
   getDb,
   getProject,
   system,

@@ -6,13 +6,13 @@ const { getProject } = require('../../src/db/index.js');
 describe('DB - Collection', () => {
   it('should not error on missing key', async () => {
     const project = await getProject('testProject');
-    const col = project.getCollection('testCollection');
+    const col = await project.getCollection('testCollection');
     const value = await col.get(nanoid());
     expect(value).null;
   });
   it('should CRUD', async () => {
     const project = await getProject('testProject');
-    const col = project.getCollection('testCollection');
+    const col = await project.getCollection('testCollection');
     const id = nanoid(6);
     const model = { testing: true, num: 42 };
     const expected = { ...model, _id: id, _kind: 'testCollection' };
@@ -38,7 +38,7 @@ describe('DB - Collection', () => {
   async function testSearch(filter, expectedRawArr, otherOptions = {}) {
     const project = await getProject('testProject');
     const _kind = `col${nanoid(7)}`;
-    const searchCol = project.getCollection(_kind);
+    const searchCol = await project.getCollection(_kind);
     models.forEach(async ({ key, value }) => await searchCol.put(key, value));
     const options = { filter, ...otherOptions };
     const expected = {

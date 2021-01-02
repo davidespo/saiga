@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { system, getProject } = require('../db');
+const { system, getProject, deleteProject } = require('../db');
 
 router.get('/projects', async (req, res) => {
-  const projectCollection = system.getProjectCollection();
+  const projectCollection = await system.getProjectCollection();
   const payload = await projectCollection.search({});
   payload.content = await Promise.all(
     payload.content.map((project) =>
@@ -29,9 +29,21 @@ router.get('/projects/:projectId', async (req, res) => {
 
 router.delete('/projects/:projectId', async (req, res) => {
   const { projectId } = req.params;
-  // TODO: cleanup
-  const projectCollection = system.getProjectCollection();
-  await projectCollection.remove(projectId);
+  await deleteProject(projectId);
+  res.send({ success: true });
+});
+
+router.post('/projects/:projectId/:collectionId', async (req, res) => {
+  const { projectId, collectionId } = req.params;
+  const project = await getProject(projectId);
+  await project.getCollection(collectionId);
+  res.send({ success: true });
+});
+
+router.delete('/projects/:projectId/:collectionId', async (req, res) => {
+  const { projectId, collectionId } = req.params;
+  const project = await getProject(projectId);
+  await project.deleteCollection(collectionId);
   res.send({ success: true });
 });
 

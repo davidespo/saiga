@@ -15,25 +15,31 @@ class Project {
         .then((res) => res.content),
     };
   }
-  getCollection(namespace) {
+  async getCollection(namespace) {
     let collection = this.collections[namespace];
     if (!collection) {
       collection = this.collections[namespace] = new Collection(
         this.db,
         namespace,
       );
-      this._collectionsDb.put(namespace, { namespace });
+      await this._collectionsDb.put(namespace, { namespace });
     }
     return collection;
+  }
+  async deleteCollection(namespace) {
+    if (!!this.collections[namespace]) {
+      delete this.collections[namespace];
+      await this._collectionsDb.remove(namespace);
+    }
   }
 }
 
 class SystemProject extends Project {
-  getProjectCollection() {
-    return this.getCollection('projects');
+  async getProjectCollection() {
+    return await this.getCollection('projects');
   }
-  getUsersCollection() {
-    return this.getCollection('users');
+  async getUsersCollection() {
+    return await this.getCollection('users');
   }
 }
 
