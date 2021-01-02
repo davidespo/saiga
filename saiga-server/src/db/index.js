@@ -64,7 +64,7 @@ async function deleteProject(projectId) {
 }
 
 module.exports = {
-  deleteProject,
+  deleteProject, // TODO: convert to CRUD and move under `system`
   getDb,
   getProject,
   system,

@@ -13,6 +13,10 @@ code,
     monospace;
 }
 
+.tall {
+  height: 100%;
+}
+
 .force-tall {
   min-height: 100vh;
 }

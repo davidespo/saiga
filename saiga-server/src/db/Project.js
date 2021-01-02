@@ -27,10 +27,8 @@ class Project {
     return collection;
   }
   async deleteCollection(namespace) {
-    if (!!this.collections[namespace]) {
-      delete this.collections[namespace];
-      await this._collectionsDb.remove(namespace);
-    }
+    delete this.collections[namespace];
+    await this._collectionsDb.remove(namespace);
   }
 }
 

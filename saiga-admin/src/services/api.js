@@ -15,6 +15,10 @@ export class SaigaApi {
     }
     return this.projects;
   }
+  async getProject(projectId) {
+    const res = await axios(`${BASE_URL}/api/system/projects/${projectId}`);
+    return res.data;
+  }
   async search(projectId, collectionId, filter) {
     const req = {
       url: `${BASE_URL}/api/data/${projectId}/${collectionId}/_search`,
@@ -33,6 +37,18 @@ export class SaigaApi {
   async deleteProject(projectId) {
     await axios({
       url: `${BASE_URL}/api/system/projects/${projectId}`,
+      method: 'DELETE',
+    });
+  }
+  async createCollection(projectId, collectionId) {
+    await axios({
+      url: `${BASE_URL}/api/system/projects/${projectId}/${collectionId}`,
+      method: 'POST',
+    });
+  }
+  async deleteCollection(projectId, collectionId) {
+    await axios({
+      url: `${BASE_URL}/api/system/projects/${projectId}/${collectionId}`,
       method: 'DELETE',
     });
   }

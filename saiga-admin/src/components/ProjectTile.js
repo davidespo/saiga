@@ -13,14 +13,18 @@ const ProjectTile = ({ project, onDelete }) => {
   return (
     <div className="border rounded p-2">
       <h5>
-        <code>{projectId}</code>
+        <code>/{projectId}</code>
       </h5>
       <p>{collections.length} Collections</p>
-      <p>
-        {collections.map(({ namespace }) => (
-          <span className="badge bg-light text-dark me-2">{namespace}</span>
-        ))}
-      </p>
+      <div style={{ height: '75px' }}>
+        <p>
+          {collections.map(({ namespace }) => (
+            <span className="badge bg-light text-dark me-2" key={namespace}>
+              {namespace}
+            </span>
+          ))}
+        </p>
+      </div>
       <div className="row">
         <div className="col">
           <Link
