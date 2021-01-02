@@ -4,6 +4,9 @@ const _ = require('lodash');
 const { getProject } = require('../../src/db/index.js');
 
 describe('DB - Collection', () => {
+  /*
+   *    BASIC TESTS
+   */
   it('should not error on missing key', async () => {
     const project = await getProject('testProject');
     const col = await project.getCollection('testCollection');
@@ -29,6 +32,10 @@ describe('DB - Collection', () => {
     value = await col.get(id);
     expect(value, 'null after delete').null;
   });
+
+  /*
+   *    SEARCH
+   */
   const m = (key, value) => ({ key, value });
   const a = m('a', { num: 42 });
   const b = m('b', { num: 3.1415 });
@@ -80,5 +87,55 @@ describe('DB - Collection', () => {
     const options = { limit: 2, reverse: true };
     const expected = [c, b];
     await testSearch(filter, expected, options);
+  });
+
+  /*
+   *    COUNT
+   */
+  async function testCount(filter, expectedCount) {
+    const project = await getProject('testProject');
+    const _kind = `col_${nanoid(5)}`;
+    const col = await project.getCollection(_kind);
+    models.forEach(async ({ key, value }) => await col.put(key, value));
+    const options = { filter };
+    const expected = {
+      count: expectedCount,
+      query: { filter },
+    };
+    const results = await col.count(options);
+    expect(results).to.deep.eq(expected);
+  }
+  it('should count with no filter', async () => {
+    const filter = {};
+    const expected = 4;
+    await testCount(filter, expected);
+  });
+  it('should count with range filter', async () => {
+    const filter = { num: { $gt: 3, $lt: 43 } };
+    const expected = 2;
+    await testCount(filter, expected);
+  });
+  it('should count with $in filter', async () => {
+    const filter = { _id: { $in: ['c', 'a'] } };
+    const expected = 2;
+    await testCount(filter, expected);
+  });
+
+  /*
+   *    TRUNCATE
+   */
+  it('should truncate all data', async () => {
+    const project = await getProject('testProject');
+    const col = await project.getCollection(`c_${nanoid()}`);
+    let result = await col.count({});
+    expect(result.count, 'expected to be empty before writes').eq(0);
+    for (let i = 0; i < 10; i++) {
+      await col.put(nanoid(), { testing: true });
+    }
+    result = await col.count({});
+    expect(result.count, 'expected to have entries after writes').eq(10);
+    await col.truncate();
+    result = await col.count({});
+    expect(result.count, 'expected to be empty after truncate').eq(0);
   });
 });

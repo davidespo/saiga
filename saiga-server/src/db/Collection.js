@@ -59,13 +59,39 @@ class Collection {
           const next = null; // TODO: pagination hints / next
           res({ content, query: { filter, limit, reverse }, next });
         });
-      // .on('end', function () {
-      //   console.log('Stream ended');
-      // });
+    });
+  }
+  async count(options = {}) {
+    let { filter } = options; // TODO: support in memory sorting
+    const filterPredicate = _.isPlainObject(filter) ? sift(filter) : () => true;
+    let count = 0;
+    return new Promise((res, rej) => {
+      const streamOptions = {
+        gte: `${this.namespace}:`,
+        lt: `${this.namespace};`,
+      };
+      this.db
+        .createReadStream(streamOptions)
+        .on('data', ({ value }) => {
+          if (filterPredicate(value)) {
+            count++;
+          }
+        })
+        .on('error', (err) => rej(err))
+        .on('close', function () {
+          res({ count, query: { filter } });
+        });
     });
   }
   async remove(key) {
     await this.db.del(this.toNsKey(key));
+  }
+  async truncate() {
+    const streamOptions = {
+      gte: `${this.namespace}:`,
+      lt: `${this.namespace};`,
+    };
+    await this.db.clear(streamOptions);
   }
 }
 
