@@ -9,13 +9,13 @@ describe('DB - Collection', () => {
    */
   it('should not error on missing key', async () => {
     const project = await getProject('testProject');
-    const col = await project.getCollection('testCollection');
+    const col = await project.getOrCreateCollection('testCollection');
     const value = await col.get(nanoid());
     expect(value).null;
   });
   it('should CRUD', async () => {
     const project = await getProject('testProject');
-    const col = await project.getCollection('testCollection');
+    const col = await project.getOrCreateCollection('testCollection');
     const id = nanoid(6);
     const model = { testing: true, num: 42 };
     const expected = { ...model, _id: id, _kind: 'testCollection' };
@@ -45,7 +45,7 @@ describe('DB - Collection', () => {
   async function testSearch(filter, expectedRawArr, otherOptions = {}) {
     const project = await getProject('testProject');
     const _kind = `col${nanoid(7)}`;
-    const searchCol = await project.getCollection(_kind);
+    const searchCol = await project.getOrCreateCollection(_kind);
     models.forEach(async ({ key, value }) => await searchCol.put(key, value));
     const options = { filter, ...otherOptions };
     const expected = {
@@ -95,7 +95,7 @@ describe('DB - Collection', () => {
   async function testCount(filter, expectedCount) {
     const project = await getProject('testProject');
     const _kind = `col_${nanoid(5)}`;
-    const col = await project.getCollection(_kind);
+    const col = await project.getOrCreateCollection(_kind);
     models.forEach(async ({ key, value }) => await col.put(key, value));
     const options = { filter };
     const expected = {
@@ -126,7 +126,7 @@ describe('DB - Collection', () => {
    */
   it('should truncate all data', async () => {
     const project = await getProject('testProject');
-    const col = await project.getCollection(`c_${nanoid()}`);
+    const col = await project.getOrCreateCollection(`c_${nanoid()}`);
     let result = await col.count({});
     expect(result.count, 'expected to be empty before writes').eq(0);
     for (let i = 0; i < 10; i++) {

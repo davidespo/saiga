@@ -15,6 +15,9 @@ class Collection {
     this.toNsKey = toNsKeyGen(namespace);
     this.fromNsKey = fromNsKeyGen(namespace);
   }
+  async getInfo() {
+    return { namespace: this.namespace };
+  }
   async get(key) {
     try {
       return await this.db.get(this.toNsKey(key));

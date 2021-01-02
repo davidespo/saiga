@@ -3,8 +3,6 @@ const { nanoid } = require('nanoid');
 const _ = require('lodash');
 const { system, deleteProject, getProject } = require('../../src/db/index.js');
 
-const sleep = (delay) => new Promise((res) => setTimeout(res, delay));
-
 describe('DB - Project', () => {
   describe('System Projects', () => {
     it('should not have null projects', async () => {
@@ -21,10 +19,20 @@ describe('DB - Project', () => {
     });
   });
   describe('App Projects', () => {
+    it('should create collection', async () => {
+      const project = await getProject(`p${nanoid(7)}`);
+      const colA = await project.createCollection('colA');
+      expect(colA).not.null;
+    });
+    it("should create collection when it doesn't exist", async () => {
+      const project = await getProject(`p${nanoid(7)}`);
+      const colA = await project.getOrCreateCollection('colA');
+      expect(colA).not.null;
+    });
     it('should namespace collections', async () => {
       const project = await getProject(`p${nanoid(7)}`);
-      const colA = await project.getCollection('colA');
-      const colB = await project.getCollection('colB');
+      const colA = await project.getOrCreateCollection('colA');
+      const colB = await project.getOrCreateCollection('colB');
       const _id = nanoid();
       await colA.put(_id, { testing: true });
       let actual = await colA.get(_id);
@@ -46,23 +54,33 @@ describe('DB - Project', () => {
       expect(row).null;
     });
     it('should CRUD manage collections', async () => {
+      // set up project
       const pid = `p_${nanoid(7)}`;
       const project = await getProject(pid);
       expect(project).not.null;
-      const cid = `c_${nanoid(7)}`;
-      await project.getCollection(cid);
+      // validate project pre-state
       let info = await project.getInfo();
       delete info.created;
       expect(info).to.deep.eq({
         _id: pid,
         _kind: 'projects',
-        collections: [
-          {
-            _id: cid,
-            namespace: cid,
-            _kind: '_collections',
-          },
-        ],
+        collections: [],
+        projectId: pid,
+      });
+      // ensure that collection does not exist
+      const cid = `c_${nanoid(7)}`;
+      let col = await project.getCollection(cid);
+      expect(col).undefined;
+      // create collection
+      col = await project.createCollection(cid);
+      expect(col).not.undefined;
+      // validate project post state
+      info = await project.getInfo();
+      delete info.created;
+      expect(info).to.deep.eq({
+        _id: pid,
+        _kind: 'projects',
+        collections: [{ namespace: cid }],
         projectId: pid,
       });
       await project.deleteCollection(cid);

@@ -10,34 +10,43 @@ class Project {
   async getInfo() {
     return {
       ...this.info,
-      collections: await this._collectionsDb
-        .search({})
-        .then((res) => res.content),
+      collections: await Promise.all(
+        Object.values(this.collections).map((collection) =>
+          collection.getInfo(),
+        ),
+      ),
     };
   }
   async getCollection(namespace) {
+    return this.collections[namespace];
+  }
+  async createCollection(namespace) {
+    this.collections[namespace] = new Collection(this.db, namespace);
+    await this._collectionsDb.put(namespace, { namespace });
+    return this.collections[namespace];
+  }
+  async getOrCreateCollection(namespace) {
     let collection = this.collections[namespace];
     if (!collection) {
-      collection = this.collections[namespace] = new Collection(
-        this.db,
-        namespace,
-      );
-      await this._collectionsDb.put(namespace, { namespace });
+      collection = await this.createCollection(namespace);
     }
     return collection;
   }
   async deleteCollection(namespace) {
-    delete this.collections[namespace];
-    await this._collectionsDb.remove(namespace);
+    if (!!this.collections[namespace]) {
+      await this.collections[namespace].truncate();
+      delete this.collections[namespace];
+      await this._collectionsDb.remove(namespace);
+    }
   }
 }
 
 class SystemProject extends Project {
   async getProjectCollection() {
-    return await this.getCollection('projects');
+    return await this.getOrCreateCollection('projects');
   }
   async getUsersCollection() {
-    return await this.getCollection('users');
+    return await this.getOrCreateCollection('users');
   }
 }
 

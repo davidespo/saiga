@@ -5,7 +5,7 @@ const { getProject } = require('../db');
 const getCollection = async (req) => {
   const { projectId, collectionId } = req.params;
   const project = await getProject(projectId);
-  return await project.getCollection(collectionId);
+  return await project.getOrCreateCollection(collectionId);
 };
 
 router.get('/:projectId/:collectionId', async (req, res) => {

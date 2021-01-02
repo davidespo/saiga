@@ -36,7 +36,7 @@ router.delete('/projects/:projectId', async (req, res) => {
 router.post('/projects/:projectId/:collectionId', async (req, res) => {
   const { projectId, collectionId } = req.params;
   const project = await getProject(projectId);
-  await project.getCollection(collectionId);
+  await project.createCollection(collectionId);
   res.send({ success: true });
 });
 

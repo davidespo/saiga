@@ -5,7 +5,8 @@
   "main": "src/main.js",
   "scripts": {
     "dev": "nodemon --watch src src/main.js",
-    "test": "DATA_PATH=.test-data mocha --recursive --reporter spec && rm -rf .test-data"
+    "test": "DATA_PATH=.test-data mocha --recursive --reporter spec && rm -rf .test-data",
+    "testOnly": "DATA_PATH=.test-data mocha --recursive --reporter spec -g 'App Projects' && rm -rf .test-data"
   },
   "directories": {
     "test": "test"
