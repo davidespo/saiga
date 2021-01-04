@@ -1,19 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { getProject } = require('../db');
+const { system } = require('../db');
+
+const sendNotFound = (res) =>
+  res.status(404).send({ success: false, message: 'Not Found' });
 
 const getCollection = async (req) => {
   const { projectId, collectionId } = req.params;
-  const project = await getProject(projectId);
+  const project = await system.getOrCreateProject(projectId);
   return await project.getOrCreateCollection(collectionId);
 };
 
+/*
+ *     LIST
+ */
 router.get('/:projectId/:collectionId', async (req, res) => {
   const collection = await getCollection(req);
   const payload = await collection.search({});
   res.send(payload);
 });
 
+/*
+ *     SEARCH
+ */
 router.post('/:projectId/:collectionId/_search', async (req, res) => {
   const { filter, limit, reverse } = req.body;
   const collection = await getCollection(req);
@@ -21,6 +30,9 @@ router.post('/:projectId/:collectionId/_search', async (req, res) => {
   res.send(payload);
 });
 
+/*
+ *     DETAILS
+ */
 router.get('/:projectId/:collectionId/:_id', async (req, res) => {
   const { _id } = req.params;
   const collection = await getCollection(req);
@@ -28,10 +40,13 @@ router.get('/:projectId/:collectionId/:_id', async (req, res) => {
   if (!!payload) {
     res.send(payload);
   } else {
-    res.status(404).send({ message: 'not found' });
+    sendNotFound(res);
   }
 });
 
+/*
+ *     UPSERT
+ */
 router.post('/:projectId/:collectionId/:_id', async (req, res) => {
   const { _id } = req.params;
   const value = req.body;
@@ -41,12 +56,19 @@ router.post('/:projectId/:collectionId/:_id', async (req, res) => {
   res.send(payload);
 });
 
+/*
+ *     DELETE
+ */
 router.delete('/:projectId/:collectionId/:_id', async (req, res) => {
   const { _id } = req.params;
-  const value = req.body;
   const collection = await getCollection(req);
-  await collection.remove(_id);
-  res.send({ success: true });
+  const value = await collection.get(_id);
+  if (!!value) {
+    await collection.remove(_id);
+    res.send({ success: true });
+  } else {
+    sendNotFound(res);
+  }
 });
 
 module.exports = {

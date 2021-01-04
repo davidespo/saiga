@@ -1,12 +1,13 @@
 const urls = {
   home: () => '/',
   project: {
-    home: (projectId) => `/p/${projectId}`,
+    home: (pid) => `/p/${pid}`,
+    dataView: (pid, cid) => `/p/${pid}/${cid}`,
   },
-  collection: {
-    home: (projectId, collectionId) => `/p/${projectId}/${collectionId}`,
-    upsertItem: (projectId, collectionId, itemId) =>
-      `/p/${projectId}/${collectionId}/${itemId}`,
+  collection: {},
+  data: {
+    create: (pid, cid) => `/p/${pid}/${cid}/_create`,
+    edit: (pid, cid, _id) => `/p/${pid}/${cid}/${_id}`,
   },
 };
 

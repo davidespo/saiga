@@ -1,98 +1,69 @@
 const { expect } = require('chai');
 const { nanoid } = require('nanoid');
 const _ = require('lodash');
-const { system, deleteProject, getProject } = require('../../src/db/index.js');
+const { Project, dbFactory } = require('../../src/db/index.js');
+
+const getProject = (pid) =>
+  new Project(dbFactory.getDb(pid), { _id: pid, _kind: 'projects' });
 
 describe('DB - Project', () => {
-  describe('System Projects', () => {
-    it('should not have null projects', async () => {
-      const projects = await system.getProjectCollection();
-      expect(projects).not.null;
+  it('should create collection', async () => {
+    const project = getProject(`p${nanoid(7)}`);
+    const colA = await project.createCollection('colA');
+    expect(colA).not.null;
+  });
+  it("should create collection when it doesn't exist", async () => {
+    const project = getProject(`p${nanoid(7)}`);
+    const colA = await project.getOrCreateCollection('colA');
+    expect(colA).not.null;
+  });
+  it('should namespace collections', async () => {
+    const project = getProject(`p${nanoid(7)}`);
+    const colA = await project.getOrCreateCollection('colA');
+    const colB = await project.getOrCreateCollection('colB');
+    const _id = nanoid();
+    await colA.put(_id, { testing: true });
+    let actual = await colA.get(_id);
+    expect(actual).not.null;
+    actual = await colB.get(_id);
+    expect(actual).null;
+  });
+  it('should CRUD manage collections', async () => {
+    // set up project
+    const pid = `p_${nanoid(7)}`;
+    const project = getProject(pid);
+    expect(project).not.null;
+    // validate project pre-state
+    let info = await project.getInfo();
+    delete info.created;
+    expect(info).to.deep.eq({
+      _id: pid,
+      _kind: 'projects',
+      collections: [],
     });
-    it('should save new project', async () => {
-      const projects = await system.getProjectCollection();
-      const _id = `project${nanoid(6)}`;
-      await getProject(_id);
-      const actual = await projects.get(_id);
-      expect(actual).not.null;
-      expect(actual.projectId).eq(_id);
+    // ensure that collection does not exist
+    const cid = `c_${nanoid(7)}`;
+    let col = await project.getCollection(cid);
+    expect(col).undefined;
+    // create collection
+    col = await project.createCollection(cid);
+    expect(col).not.undefined;
+    // validate project post state
+    info = await project.getInfo();
+    delete info.created;
+    expect(info).to.deep.eq({
+      _id: pid,
+      _kind: 'projects',
+      collections: [{ namespace: cid }],
+    });
+    await project.deleteCollection(cid);
+    info = await project.getInfo();
+    delete info.created;
+    expect(info).to.deep.eq({
+      _id: pid,
+      _kind: 'projects',
+      collections: [],
     });
   });
-  describe('App Projects', () => {
-    it('should create collection', async () => {
-      const project = await getProject(`p${nanoid(7)}`);
-      const colA = await project.createCollection('colA');
-      expect(colA).not.null;
-    });
-    it("should create collection when it doesn't exist", async () => {
-      const project = await getProject(`p${nanoid(7)}`);
-      const colA = await project.getOrCreateCollection('colA');
-      expect(colA).not.null;
-    });
-    it('should namespace collections', async () => {
-      const project = await getProject(`p${nanoid(7)}`);
-      const colA = await project.getOrCreateCollection('colA');
-      const colB = await project.getOrCreateCollection('colB');
-      const _id = nanoid();
-      await colA.put(_id, { testing: true });
-      let actual = await colA.get(_id);
-      expect(actual).not.null;
-      actual = await colB.get(_id);
-      expect(actual).null;
-    });
-    it('should CRUD app projects', async () => {
-      const pid = `p_${nanoid(7)}`;
-      const project = await getProject(pid);
-      expect(project).not.null;
-      const actual = await getProject(pid);
-      expect(actual === project, 'project was not cached').true;
-      const projectCollection = await system.getProjectCollection();
-      let row = await projectCollection.get(pid);
-      expect(row).not.null;
-      await deleteProject(pid);
-      row = await projectCollection.get(pid);
-      expect(row).null;
-    });
-    it('should CRUD manage collections', async () => {
-      // set up project
-      const pid = `p_${nanoid(7)}`;
-      const project = await getProject(pid);
-      expect(project).not.null;
-      // validate project pre-state
-      let info = await project.getInfo();
-      delete info.created;
-      expect(info).to.deep.eq({
-        _id: pid,
-        _kind: 'projects',
-        collections: [],
-        projectId: pid,
-      });
-      // ensure that collection does not exist
-      const cid = `c_${nanoid(7)}`;
-      let col = await project.getCollection(cid);
-      expect(col).undefined;
-      // create collection
-      col = await project.createCollection(cid);
-      expect(col).not.undefined;
-      // validate project post state
-      info = await project.getInfo();
-      delete info.created;
-      expect(info).to.deep.eq({
-        _id: pid,
-        _kind: 'projects',
-        collections: [{ namespace: cid }],
-        projectId: pid,
-      });
-      await project.deleteCollection(cid);
-      info = await project.getInfo();
-      delete info.created;
-      expect(info).to.deep.eq({
-        _id: pid,
-        _kind: 'projects',
-        collections: [],
-        projectId: pid,
-      });
-    });
-    // TODO: proper cleanup
-  });
+  // TODO: proper cleanup
 });

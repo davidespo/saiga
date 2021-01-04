@@ -5,8 +5,10 @@
   "main": "src/main.js",
   "scripts": {
     "dev": "nodemon --watch src src/main.js",
-    "test": "DATA_PATH=.test-data mocha --recursive --reporter spec && rm -rf .test-data",
-    "testOnly": "DATA_PATH=.test-data mocha --recursive --reporter spec -g 'App Projects' && rm -rf .test-data"
+    "pretest": "npm run test:clean",
+    "test": "DATA_PATH=.test-data mocha --recursive --reporter spec",
+    "posttest": "npm run test:clean",
+    "test:clean": "rimraf .test-data"
   },
   "directories": {
     "test": "test"
@@ -23,8 +25,10 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "mocha": "^8.2.1",
-    "nodemon": "^2.0.6"
+    "nodemon": "^2.0.6",
+    "rimraf": "^3.0.2"
   },
   "keywords": [],
   "author": "",

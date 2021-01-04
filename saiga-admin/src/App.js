@@ -5,7 +5,8 @@ import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import NotFound from './pages/NotFound';
 import ProjectHomePage from './pages/ProjectHomePage';
-import CollectionHomePage from './pages/CollectionHomePage';
+// import CollectionHomePage from './pages/CollectionHomePage';
+// <Route path="/p/:pid/:cid" exact component={CollectionHomePage} />
 
 const App = () => {
   return (
@@ -15,12 +16,9 @@ const App = () => {
         <div className="p-2 mt-4">
           <Switch>
             <Route path="/" exact component={HomePage} />
-            <Route path="/p/:projectId" exact component={ProjectHomePage} />
-            <Route
-              path="/p/:projectId/:collectionId"
-              exact
-              component={CollectionHomePage}
-            />
+            <Route path="/p/:pid" exact component={ProjectHomePage} />
+            <Route path="/p/:pid/:cid" exact component={ProjectHomePage} />
+
             <Route component={NotFound} />
           </Switch>
         </div>

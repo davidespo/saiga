@@ -29,4 +29,4 @@ function run() {
   });
 }
 
-module.exports = { run };
+module.exports = { app, run };

@@ -15,40 +15,46 @@ export class SaigaApi {
     }
     return this.projects;
   }
-  async getProject(projectId) {
-    const res = await axios(`${BASE_URL}/api/system/projects/${projectId}`);
+  async getProject(pid) {
+    const res = await axios(`${BASE_URL}/api/system/projects/${pid}`);
     return res.data;
   }
-  async search(projectId, collectionId, filter) {
+  async search(pid, cid, filter) {
     const req = {
-      url: `${BASE_URL}/api/data/${projectId}/${collectionId}/_search`,
+      url: `${BASE_URL}/api/data/${pid}/${cid}/_search`,
       method: 'POST',
       data: { filter },
     };
     const res = await axios(req);
     return res.data;
   }
-  async createProject(projectId) {
+  async createProject(pid) {
     await axios({
-      url: `${BASE_URL}/api/system/projects/${projectId}`,
+      url: `${BASE_URL}/api/system/projects/${pid}`,
       method: 'POST',
     });
   }
-  async deleteProject(projectId) {
+  async deleteProject(pid) {
     await axios({
-      url: `${BASE_URL}/api/system/projects/${projectId}`,
+      url: `${BASE_URL}/api/system/projects/${pid}`,
       method: 'DELETE',
     });
   }
-  async createCollection(projectId, collectionId) {
+  async createCollection(pid, cid) {
     await axios({
-      url: `${BASE_URL}/api/system/projects/${projectId}/${collectionId}`,
+      url: `${BASE_URL}/api/system/projects/${pid}/${cid}`,
       method: 'POST',
     });
   }
-  async deleteCollection(projectId, collectionId) {
+  async deleteCollection(pid, cid) {
     await axios({
-      url: `${BASE_URL}/api/system/projects/${projectId}/${collectionId}`,
+      url: `${BASE_URL}/api/system/projects/${pid}/${cid}`,
+      method: 'DELETE',
+    });
+  }
+  async deleteData(pid, cid, _id) {
+    await axios({
+      url: `${BASE_URL}/api/data/${pid}/${cid}/${_id}`,
       method: 'DELETE',
     });
   }
