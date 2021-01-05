@@ -1,4 +1,5 @@
 import React from 'react';
+import pNameGen from 'project-name-generator';
 
 const PlusTile = ({ setActive }) => {
   return (
@@ -15,7 +16,7 @@ const PlusTile = ({ setActive }) => {
 };
 
 const FormTile = ({ onCreate, onCancel }) => {
-  const [pid, setPid] = React.useState('');
+  const [pid, setPid] = React.useState(pNameGen().dashed);
   // TODO: random name button
   return (
     <div
@@ -36,6 +37,12 @@ const FormTile = ({ onCreate, onCancel }) => {
           onChange={(e) => setPid(e.target.value)}
         />
       </form>
+      <button
+        className="btn btn-info btn-sm wide"
+        onClick={() => setPid(pNameGen().dashed)}
+      >
+        <i className="fa fa-random"></i> Random
+      </button>
       <button className="btn btn-warning btn-sm wide" onClick={onCancel}>
         Cancel
       </button>

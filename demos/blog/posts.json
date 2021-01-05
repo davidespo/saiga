@@ -1,0 +1,24 @@
+{
+  "content": [
+    {
+      "title": "You won't believe how much progress we made!",
+      "description": "Let's get serious about our side projects. Here's how to make it start happening!",
+      "content": "A paragraph with *emphasis* and **strong importance**.\n \n> A block quote with ~strikethrough~ and a URL: https://reactjs.org.\n \n* Lists\n* [ ] todo\n* [x] done\n \nA table:\n \n| a | b |\n|---|---|\n| Hello | World! |\n",
+      "tags": ["api", "side projects"],
+      "publishedAt": 1609816874453,
+      "_id": "20200103-01-update",
+      "_kind": "posts"
+    },
+    {
+      "title": "Check out this awesome demo!",
+      "description": "Did you know you could do all of this **awesome** stuff?!",
+      "content": "A paragraph with *emphasis* and **strong importance**.\n \n> A block quote with ~strikethrough~ and a URL: https://reactjs.org.\n \n* Lists\n* [ ] todo\n* [x] done\n \nA table:\n \n| a | b |\n| - | - |\n",
+      "tags": ["demo", "api", "blogs"],
+      "publishedAt": 1609819874453,
+      "_id": "20200104-01-demo",
+      "_kind": "posts"
+    }
+  ],
+  "query": { "limit": 25, "reverse": false },
+  "next": null
+}

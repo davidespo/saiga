@@ -18,30 +18,32 @@ const PopulateDataList = ({ pid, cid }) => {
   if (!data || !data.content) {
     return <em>Waiting...</em>;
   }
+  let content;
   if (data.content.length === 0) {
-    return <em>There is nothing here...</em>;
+    content = <em>There is nothing here...</em>;
+  } else {
+    content = data.content.map((row) => (
+      <DataRow row={row} pid={pid} cid={cid} key={row._id} onDelete={refresh} />
+    ));
   }
   return (
     <div>
-      <button
-        className="btn btn-success me-2"
-        type="button"
-        onClick={() => refresh({ pid, cid })}
-      >
-        <i className="fa fa-refresh"></i> Refresh
-      </button>
-      <Link className="btn btn-primary me-2" to={urls.data.create(pid, cid)}>
-        <i className="fa fa-plus"></i> New Entry
-      </Link>
-      {data.content.map((row) => (
-        <DataRow
-          row={row}
-          pid={pid}
-          cid={cid}
-          key={row._id}
-          onDelete={refresh}
-        />
-      ))}
+      <div className="mb-3">
+        <button
+          className="btn btn-outline-success me-2"
+          type="button"
+          onClick={() => refresh({ pid, cid })}
+        >
+          <i className="fa fa-refresh"></i> Refresh
+        </button>
+        <Link
+          className="btn btn-outline-primary me-2"
+          to={urls.data.create(pid, cid)}
+        >
+          <i className="fa fa-plus"></i> New Entry
+        </Link>
+      </div>
+      <div>{content}</div>
     </div>
   );
 };

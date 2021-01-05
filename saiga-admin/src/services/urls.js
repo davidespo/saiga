@@ -6,8 +6,8 @@ const urls = {
   },
   collection: {},
   data: {
-    create: (pid, cid) => `/p/${pid}/${cid}/_create`,
-    edit: (pid, cid, _id) => `/p/${pid}/${cid}/${_id}`,
+    create: (pid, cid) => `/p/${pid}/${cid}/new`,
+    edit: (pid, cid, _id) => `/p/${pid}/${cid}/edit/${_id}`,
   },
 };
 

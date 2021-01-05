@@ -52,8 +52,20 @@ export class SaigaApi {
       method: 'DELETE',
     });
   }
-  async deleteData(pid, cid, _id) {
-    await axios({
+  createData(pid, cid, _id, data) {
+    return axios({
+      url: `${BASE_URL}/api/data/${pid}/${cid}/${_id}`,
+      method: 'POST',
+      data,
+    });
+  }
+  getData(pid, cid, _id) {
+    return axios(`${BASE_URL}/api/data/${pid}/${cid}/${_id}`).then(
+      ({ data }) => data,
+    );
+  }
+  deleteData(pid, cid, _id) {
+    return axios({
       url: `${BASE_URL}/api/data/${pid}/${cid}/${_id}`,
       method: 'DELETE',
     });
